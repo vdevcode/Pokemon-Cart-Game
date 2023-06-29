@@ -4,8 +4,9 @@
     <CardFlip
       v-for="(card, index) in cardsContext"
       :key="index"
+      :ref="`card-${index}`"
       :imgBackFaceUrl="`images/${card}.png`"
-      :card="card"
+      :card="{ index, value: card }"
       @onFlip="checkRule($event)"
     />
   </div>
@@ -23,28 +24,37 @@ export default {
       },
     },
   },
+  components: {
+    CardFlip,
+  },
   data() {
     return {
       rules: [],
     };
   },
-  components: {
-    CardFlip,
-  },
   methods: {
     checkRule(card) {
+      console.log(card);
       if (this.rules.length === 2) {
         return false;
       }
       this.rules.push(card);
-      console.log(this.rules);
-
-      if (this.rules.length === 2 && this.rules[0] === this.rules[1]) {
-        return true;
-        // console.log('right');
-      } else if (this.rules.length === 2 && this.rules[0] !== this.rules[1]) {
-        return false;
-      }
+      if (
+        this.rules.length === 2 &&
+        this.rules[0].value === this.rules[1].value
+      ) {
+        console.log("right");
+      } else if (
+        this.rules.length === 2 &&
+        this.rules[0].value !== this.rules[1].value
+      ) {
+        console.log("wrong");
+        setTimeout(() => {
+          this.$refs[`card-${this.rules[0].index}`][0].onFlipBackCard();
+          this.$refs[`card-${this.rules[1].index}`][0].onFlipBackCard();
+          this.rules = [];
+        }, 800);
+      } else return false;
     },
   },
 };

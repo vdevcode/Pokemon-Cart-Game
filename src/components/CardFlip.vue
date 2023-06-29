@@ -30,6 +30,9 @@ export default {
     card: {
       type: [String, Number, Object, Array],
     },
+    rules: {
+      type: Array,
+    },
   },
   data() {
     return {
@@ -39,7 +42,12 @@ export default {
   methods: {
     onToggleFlipCard() {
       this.isFlipped = !this.isFlipped;
-      if (this.isFlipped == true) this.$emit("onFlip", this.card);
+      if (this.isFlipped) {
+        this.$emit("onFlip", this.card);
+      }
+    },
+    onFlipBackCard() {
+      this.isFlipped = false;
     },
   },
 };
