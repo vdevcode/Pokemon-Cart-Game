@@ -1,23 +1,36 @@
 <template>
-  <h1>Game Pokemon</h1>
   <MainScreen
     v-if="statusMatch === 'default'"
     @onStart="onHandleBeforeStart($event)"
   />
   <InteractScreen
+    @onFinished="onGetResult"
     v-if="statusMatch == 'match'"
     :cardsContext="settings.cardsContext"
   />
+  <ResultScreen
+    :timer="timer"
+    v-if="statusMatch === 'result'"
+    @onStartAgain="statusMatch = 'default'"
+  />
+  <CoppyRightScreen />
 </template>
 
 <script>
 import MainScreen from "@/components/MainScreen.vue";
 import InteractScreen from "@/components/InteractScreen.vue";
-
+import ResultScreen from "@/components/ResultScreen.vue";
+import CoppyRightScreen from "./components/CoppyRightScreen.vue";
 import { shuffle } from "@/utils/array.js";
 
 export default {
   name: "App",
+  components: {
+    MainScreen,
+    InteractScreen,
+    ResultScreen,
+    CoppyRightScreen,
+  },
   data() {
     return {
       settings: {
@@ -26,11 +39,8 @@ export default {
         startedAt: null,
       },
       statusMatch: "default",
+      timer: 0,
     };
-  },
-  components: {
-    MainScreen,
-    InteractScreen,
   },
   methods: {
     onHandleBeforeStart(config) {
@@ -48,6 +58,25 @@ export default {
       //load data
       this.statusMatch = "match";
     },
+    onGetResult() {
+      this.timer = new Date().getTime() - this.settings.startedAt;
+      this.statusMatch = "result";
+    },
   },
 };
 </script>
+
+<style scoped>
+.coppyright {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0rem;
+  color: var(--light);
+  z-index: 3;
+  font-size: 1rem;
+}
+.coppyright a {
+  color: yellow !important;
+}
+</style>

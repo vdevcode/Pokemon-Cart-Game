@@ -1,12 +1,37 @@
 <template>
-  <div class="card">
+  <div
+    class="card"
+    :class="{ disabled: isDisable }"
+    :style="{
+      height: `${(920 - 16 * 4) / Math.sqrt(cardsContext.length) - 16}px`,
+      width: `${
+        (((920 - 16 * 4) / Math.sqrt(cardsContext.length) - 16) * 3) / 4
+      }px`,
+      perspective: `${
+        ((((920 - 16 * 4) / Math.sqrt(cardsContext.length) - 16) * 3) / 4) * 2
+      }px`,
+    }"
+  >
     <div
       class="card__inner"
       :class="{ 'is-flipped': isFlipped }"
       @click="onToggleFlipCard"
     >
       <div class="card__face card__face--front">
-        <div class="card__content"></div>
+        <div
+          class="card__content"
+          :style="{
+            'background-size': `${
+              (((920 - 16 * 4) / Math.sqrt(cardsContext.length) - 16) * 3) /
+              4 /
+              3
+            }px ${
+              (((920 - 16 * 4) / Math.sqrt(cardsContext.length) - 16) * 3) /
+              4 /
+              3
+            }px`,
+          }"
+        ></div>
       </div>
       <div class="card__face card__face--back">
         <div
@@ -33,14 +58,24 @@ export default {
     rules: {
       type: Array,
     },
+    cardsContext: {
+      type: Array,
+      default: function () {
+        return [];
+      },
+    },
   },
   data() {
     return {
       isFlipped: false,
+      isDisable: false,
     };
   },
   methods: {
     onToggleFlipCard() {
+      if (this.isDisable) {
+        return false;
+      }
       this.isFlipped = !this.isFlipped;
       if (this.isFlipped) {
         this.$emit("onFlip", this.card);
@@ -48,6 +83,9 @@ export default {
     },
     onFlipBackCard() {
       this.isFlipped = false;
+    },
+    onEnabelDisableCard() {
+      this.isDisable = true;
     },
   },
 };
@@ -72,7 +110,9 @@ export default {
   cursor: pointer;
   position: relative;
 }
-
+.card.disabled .card__inner {
+  cursor: default;
+}
 .card__face {
   position: absolute;
   backface-visibility: hidden;
@@ -84,7 +124,11 @@ export default {
   height: 100%;
 }
 .card__face--back {
-  background-color: var(--light);
+  background: url("https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs/204364595/original/86db6005cd51b4f60e71cca277f603a82cf5646a/draw-a-pixel-pokemon-battle-background.png");
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
   transform: rotateY(-180deg);
 }
 .card__face--front .card__content {
